@@ -1,7 +1,7 @@
 name: easy_http
 description: "simple request APIs  that ensure your request has no errors and handle request errors"
 version: 0.0.1
-homepage:
+homepage: https://github.com/khaledSayedAbdellah/easy_http.git
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
