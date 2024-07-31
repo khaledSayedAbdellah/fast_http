@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:fast_http/core/API/request_method.dart';
 
-import '../API/request_method.dart';
 
 enum ExpectType {object, list, bytes, response}
 

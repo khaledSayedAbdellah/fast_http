@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import '../API/request_method.dart';
-import '../error/exceptions.dart';
-import '../error/error_message_model.dart';
+import 'package:fast_http/core/API/request_method.dart';
+import 'package:fast_http/core/Error/error_message_model.dart';
+import 'package:fast_http/core/Error/exceptions.dart';
 import 'cache_response_manager.dart';
 
 abstract interface class ModelValidation{
