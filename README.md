@@ -1,4 +1,4 @@
-[![pub package](https://img.shields.io/badge/0.0.1-back?label=fast_http&color=rede)](https://pub.dev/packages/fast_http)
+[![pub package](https://img.shields.io/badge/0.0.1-back?label=fast_http&color=red)](https://pub.dev/packages/fast_http)
 
 simple request APIs  that ensure your request has no errors and handle request errors.
 
