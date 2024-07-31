@@ -1,40 +1,32 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+[![pub package](https://img.shields.io/badge/easy_http-red?logoSize=github&label=0.0.1&color=blue)](https://pub.dev/packages/easy_http)
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+simple request APIs  that ensure your request has no errors and handle request errors.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Using
 
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+The easiest way to use this library is via the top-level functions. They allow
+you to make individual HTTP requests with minimal hassle:
 
 ```dart
-const like = 'sample';
+static Future<Either<Failure,Uint8List>> getImageData({required String imagePath})async{
+    try {
+      Uint8List response = await GenericRequest<dynamic>(
+        method: RequestApi.get(url: imagePath,),
+        fromMap: emptyFromMap,
+      ).getBytes();
+      return Right(response);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel));
+    }
+  }
 ```
 
-## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
-# easy_http
+### 1. Add the EASY HTTP.
+
+To add a package compatible with the Dart SDK to your project, use `dart pub add`.
+
+```terminal
+dart pub add easy_http
+```
