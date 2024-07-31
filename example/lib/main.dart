@@ -50,16 +50,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   Uint8List? imageData;
 
-  Future getImage()async{
-    setState(() {imageData = null;});
-   final result = await APIMethod.getImageData(imagePath: "https://picsum.photos/id/237/200/300");
-   result.fold((l)=> log(l.errorModel.statusMessage), (r)=> setState(() {imageData = r;}));
-
+  Future getImage() async {
+    setState(() {
+      imageData = null;
+    });
+    final result = await APIMethod.getImageData(
+        imagePath: "https://picsum.photos/id/237/200/300");
+    result.fold(
+        (l) => log(l.errorModel.statusMessage),
+        (r) => setState(() {
+              imageData = r;
+            }));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,23 +80,24 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: getImage,
               child: const Text("execute simple request"),
             ),
-            const SizedBox(height: 16,),
-            if(imageData != null) Image.memory(imageData!),
-            if(imageData == null) const CircularProgressIndicator(),
-
+            const SizedBox(
+              height: 16,
+            ),
+            if (imageData != null) Image.memory(imageData!),
+            if (imageData == null) const CircularProgressIndicator(),
           ],
         ),
       ),
       floatingActionButton: StreamBuilder<RequestProgressModel>(
-        stream: FastHttp.requestProgressStream.stream,
-        builder: (context, snapshot) {
-          if(!snapshot.hasData) return const SizedBox();
-          return FloatingActionButton(
-            onPressed: (){},
-            child: Text("${snapshot.data?.bytes??0} / ${snapshot.data?.totalBytes??0}"),
-          );
-        }
-      ),
+          stream: FastHttp.requestProgressStream.stream,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return const SizedBox();
+            return FloatingActionButton(
+              onPressed: () {},
+              child: Text(
+                  "${snapshot.data?.bytes ?? 0} / ${snapshot.data?.totalBytes ?? 0}"),
+            );
+          }),
     );
   }
 }

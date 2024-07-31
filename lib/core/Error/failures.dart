@@ -19,7 +19,7 @@ class ServerFailure extends Failure {
     dynamic result = model.statusMessage;
     if (result.runtimeType == List) {
       // ToastHelper.showError(message: result.join('!@#').replaceAll('!@#', "'\n"));
-    }else{
+    } else {
       // ToastHelper.showError(message: result ?? "");
     }
   }
