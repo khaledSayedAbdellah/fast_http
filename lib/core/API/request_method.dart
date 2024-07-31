@@ -261,11 +261,11 @@ class _ApiBaseHelper {
     switch (statusCode) {
       case 200:{
         if (jsonResponse["success"] == false) {
-          throw serverException(message: jsonResponse["message"]);
+          throw serverException(message: jsonResponse["message"]?.toString());
         }
         return jsonResponse;
       }
-      default: throw serverException(message: jsonResponse["message"]);
+      default: throw serverException(message: jsonResponse["message"]?.toString());
     }
   }
 

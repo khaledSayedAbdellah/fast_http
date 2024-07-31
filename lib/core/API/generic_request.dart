@@ -9,7 +9,7 @@ abstract interface class ModelValidation{
   String? validate();
 }
 
-Function(Map<String, dynamic> json) emptyFromMap(_)=> _;
+dynamic emptyFromMap = (Map<String, dynamic> _)=> _;
 class GenericRequest<T> {
   final T Function(Map<String, dynamic> json) fromMap;
   final RequestApi method;
@@ -30,9 +30,9 @@ class GenericRequest<T> {
     Map<String, dynamic> response;
     if(!usingCache) {
       if (method.body.isNotEmpty) {
-        response = await method.request();
+        response = await method.request() as Map<String, dynamic>;
       } else {
-        response = await method.requestJson();
+        response = await method.requestJson() as Map<String, dynamic>;
       }
     }else{
       String? cachedResponse = await CacheResponseManager().getCachedResponseText(method);
@@ -43,7 +43,7 @@ class GenericRequest<T> {
       throw errorModel(response,"data is not compatible with expected data",ExpectType.object);
     }
     try{
-      T result = fromMap(response["data"]);
+      T result = fromMap(response["data"] as Map<String,dynamic>);
       if(T is ModelValidation){
         String? validateError = (result as ModelValidation).validate();
         if(validateError!=null) throw errorModel(response,validateError,ExpectType.object);
@@ -58,9 +58,9 @@ class GenericRequest<T> {
     Map<String, dynamic> response;
     if(!usingCache){
       if (method.body.isNotEmpty  || method.files.isNotEmpty) {
-        response = await method.request();
+        response = await method.request() as Map<String, dynamic>;
       } else {
-        response = await method.requestJson();
+        response = await method.requestJson() as Map<String, dynamic>;
       }
     }else{
       String? cachedResponse = await CacheResponseManager().getCachedResponseText(method);
@@ -68,7 +68,7 @@ class GenericRequest<T> {
       response = jsonDecode(cachedResponse) as Map<String,dynamic>;
     }
     if (!(response["data"] is List || response["data"]["data"] is List)) throw errorModel(response,"data is not compatible with expected data",ExpectType.list);
-    final responseList = (response["data"] is List)? response["data"] : response["data"]["data"];
+    final List<Map<String, dynamic>> responseList = ((response["data"] is List)? response["data"] : response["data"]["data"]) as List<Map<String, dynamic>>;
     try{
       List<T> resultList =  List<T>.from(responseList.map((e) => fromMap(e)));
       if(T is ModelValidation){
@@ -87,9 +87,9 @@ class GenericRequest<T> {
     Uint8List response;
     if(!usingCache){
       if (method.body.isNotEmpty  || method.files.isNotEmpty) {
-        response = await method.request(getResponseBytes: true);
+        response = await method.request(getResponseBytes: true) as Uint8List;
       } else {
-        response = await method.requestJson(getResponseBytes: true);
+        response = await method.requestJson(getResponseBytes: true) as Uint8List;
       }
     }else{
       Uint8List? cachedResponse = await CacheResponseManager().getCachedResponseBytes(method);
@@ -108,9 +108,9 @@ class GenericRequest<T> {
     Map<String, dynamic> response;
     if(!usingCache){
       if (method.body.isNotEmpty || method.files.isNotEmpty) {
-        response = await method.request();
+        response = await method.request() as Map<String, dynamic>;
       } else {
-        response = await method.requestJson();
+        response = await method.requestJson() as Map<String, dynamic>;
       }
     }else{
       String? cachedResponse = await CacheResponseManager().getCachedResponseText(method);
