@@ -9,7 +9,7 @@ abstract interface class ModelValidation{
   String? validate();
 }
 
-dynamic emptyFromMap = (Map<String, dynamic> _)=> _;
+dynamic emptyFromMap = (Map<String, dynamic> a)=> a;
 class GenericRequest<T> {
   final T Function(Map<String, dynamic> json) fromMap;
   final RequestApi method;

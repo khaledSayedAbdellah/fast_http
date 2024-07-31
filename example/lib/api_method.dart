@@ -1,6 +1,8 @@
 import 'dart:typed_data';
+import 'package:fast_http/core/API/generic_request.dart';
 import 'package:fast_http/core/API/request_method.dart';
-import 'package:fast_http/fast_http.dart';
+import 'package:fast_http/core/Error/exceptions.dart';
+import 'package:fast_http/core/Error/failures.dart';
 
 
 class APIMethod{
