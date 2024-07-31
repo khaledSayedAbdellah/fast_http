@@ -1,4 +1,4 @@
-[![pub package](https://img.shields.io/badge/easy_http-red?logoSize=github&label=0.0.1&color=blue)](https://pub.dev/packages/easy_http)
+[![pub package](https://img.shields.io/badge/0.0.1-back?label=fast_http&color=rede)](https://pub.dev/packages/fast_http)
 
 simple request APIs  that ensure your request has no errors and handle request errors.
 
@@ -23,10 +23,10 @@ static Future<Either<Failure,Uint8List>> getImageData({required String imagePath
 ```
 
 
-### 1. Add the EASY HTTP.
+### 1. Add the FAST HTTP.
 
 To add a package compatible with the Dart SDK to your project, use `dart pub add`.
 
 ```terminal
-dart pub add easy_http
+dart pub add fast_http
 ```

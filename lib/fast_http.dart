@@ -1,4 +1,4 @@
-library easy_http;
+library fast_http;
 import 'dart:async';
 export './core/API/generic_request.dart';
 export './core/API/cache_response_manager.dart';
@@ -11,7 +11,7 @@ class RequestProgressModel{
   RequestProgressModel({this.bytes,this.totalBytes});
 }
 
-class EasyHttp {
+class FastHttp {
 
   static StreamController<RequestProgressModel> requestProgressStream = StreamController<RequestProgressModel>.broadcast();
   static Map<String,String> staticHeaders = {};

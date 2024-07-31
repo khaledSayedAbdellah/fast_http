@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'dart:typed_data';
-import 'package:easy_http/easy_http.dart';
+import 'package:easy_http/fast_http.dart';
 import 'package:flutter/material.dart';
 
 import 'api_method.dart';
@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: StreamBuilder<RequestProgressModel>(
-        stream: EasyHttp.requestProgressStream.stream,
+        stream: FastHttp.requestProgressStream.stream,
         builder: (context, snapshot) {
           if(!snapshot.hasData) return const SizedBox();
           return FloatingActionButton(

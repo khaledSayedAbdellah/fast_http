@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:easy_http/core/API/request_method.dart';
-import 'package:easy_http/easy_http.dart';
+import 'package:easy_http/fast_http.dart';
 
 class APIMethod{
   static Future<Either<Failure,dynamic>> executeRequestApi({required RequestApi requestApi})async{

@@ -1,4 +1,4 @@
-name: easy_http
+name: fast_http
 description: "simple request APIs  that ensure your request has no errors and handle request errors"
 version: 0.0.1
 homepage: https://github.com/khaledSayedAbdellah/easy_http.git

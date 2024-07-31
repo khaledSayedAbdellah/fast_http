@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:ansicolor/ansicolor.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../../easy_http.dart';
+import '../../fast_http.dart';
 export 'package:dartz/dartz.dart';
 
 
@@ -140,7 +140,7 @@ class RequestApi {
     debugPrint(uri.toString());
     debugPrint(json.encode(body));
     http.MultipartRequest request = MultipartRequest(method, uri, onProgress: (int? bytes, int? totalBytes) {
-      EasyHttp.requestProgressStream.add(RequestProgressModel(bytes: bytes,totalBytes: totalBytes));
+      FastHttp.requestProgressStream.add(RequestProgressModel(bytes: bytes,totalBytes: totalBytes));
     });
     request.fields.addAll(body);
     request.files.addAll(files);
@@ -206,7 +206,7 @@ class _ApiBaseHelper {
     Uint8List? responseBytes;
     String? responseText;
     try {
-      request.headers.addAll(EasyHttp.staticHeaders);
+      request.headers.addAll(FastHttp.staticHeaders);
 
       response = await request.send().timeout(const Duration(minutes: 5));
       if(getResponseBytes) responseBytes = await response.stream.toBytes();
@@ -232,7 +232,7 @@ class _ApiBaseHelper {
   }
 
   static Future<dynamic> _returnResponse(int statusCode,String resStream,RequestApi requestApi) async {
-    EasyHttp.onGetStatusCode?.call(statusCode);
+    FastHttp.onGetStatusCode?.call(statusCode);
     Map<String,dynamic> jsonResponse = {};
 
     ServerException serverException({String? message}) => ServerException(
