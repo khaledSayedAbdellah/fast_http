@@ -13,14 +13,10 @@ class FastHttp {
   static Map<String, String> staticHeaders = {};
   static Function(int)? onGetStatusCode;
 
-  void initialize(
+  static void initialize(
       {required Function(int) onGetResponseStatusCode,
       Map<String, String>? headers}) {
     onGetStatusCode = onGetResponseStatusCode;
     if (headers != null) staticHeaders = headers;
-  }
-
-  void setConstHeader({required Map<String, String> headers}) {
-    staticHeaders = headers;
   }
 }
