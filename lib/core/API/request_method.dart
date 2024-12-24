@@ -7,45 +7,38 @@ import 'package:fast_http/core/Error/exceptions.dart';
 import 'package:fast_http/fast_http.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import '../Error/error_message_model.dart';
-import 'cache_response_manager.dart';
 export 'package:dartz/dartz.dart';
 
 class RequestApi {
   final Uri uri;
-  final Map<String, String> body;
-  final Map<String, dynamic> bodyJson;
+  final Map<String, dynamic> body;
   final List<http.MultipartFile> files;
   final Map<String, String>? headers;
   final String method;
-  final bool enableCache;
 
-  RequestApi._(
-      {required this.uri,
-      required this.body,
-      required this.bodyJson,
-      required this.files,
-      this.headers,
-      required this.method,
-      required this.enableCache});
+  RequestApi._({
+    required this.uri,
+    required this.body,
+    required this.files,
+    this.headers,
+    required this.method,
+  });
 
-  RequestApi copyWith(
-      {Uri? uri,
-      Map<String, String>? body,
-      Map<String, dynamic>? bodyJson,
-      List<http.MultipartFile>? files,
-      Map<String, String>? headers,
-      String? method,
-      bool? enableCache}) {
+  RequestApi copyWith({
+    Uri? uri,
+    Map<String, dynamic>? body,
+    List<http.MultipartFile>? files,
+    Map<String, String>? headers,
+    String? method,
+  }) {
     return RequestApi._(
-        files: files ?? this.files,
-        body: body ?? this.body,
-        bodyJson: bodyJson ?? this.bodyJson,
-        uri: uri ?? this.uri,
-        method: method ?? this.method,
-        headers: headers ?? this.headers,
-        enableCache: enableCache ?? this.enableCache);
+      files: files ?? this.files,
+      body: body ?? this.body,
+      uri: uri ?? this.uri,
+      method: method ?? this.method,
+      headers: headers ?? this.headers,
+    );
   }
 
   RequestApi.post({
@@ -53,27 +46,13 @@ class RequestApi {
     required this.body,
     this.files = const [],
     this.headers,
-    this.enableCache = false,
-  })  : method = "POST",
-        uri = Uri.parse(url),
-        bodyJson = {};
-  RequestApi.postJson({
-    required String url,
-    required this.bodyJson,
-    this.headers,
-    this.enableCache = false,
-  })  : method = "POST",
-        uri = Uri.parse(url),
-        files = [],
-        body = {};
+  })  : method = "POST", uri = Uri.parse(url);
 
   RequestApi.postUri({
     required this.uri,
-    this.bodyJson = const {},
     this.body = const {},
     this.files = const [],
     this.headers,
-    this.enableCache = false,
   }) : method = "POST";
 
   RequestApi.put({
@@ -81,106 +60,150 @@ class RequestApi {
     required this.body,
     this.files = const [],
     this.headers,
-  })  : method = "PUT",
-        uri = Uri.parse(url),
-        bodyJson = {},
-        enableCache = false;
-  RequestApi.putJson({
-    required String url,
-    required this.bodyJson,
+  })  : method = "PUT", uri = Uri.parse(url);
+
+  RequestApi.putUri({
+    required this.uri,
+    required this.body,
+    this.files = const [],
     this.headers,
-  })  : method = "PUT",
-        uri = Uri.parse(url),
-        files = [],
-        body = {},
-        enableCache = false;
+  })  : method = "PUT";
 
   RequestApi.get({
     required String url,
     this.headers,
-    this.enableCache = false,
-  })  : method = "GET",
-        body = {},
-        files = [],
-        uri = Uri.parse(url),
-        bodyJson = {};
+  })  : method = "GET", body = {}, files = [], uri = Uri.parse(url);
+
   RequestApi.getUri({
     required this.uri,
     this.headers,
-    this.enableCache = false,
-  })  : method = "GET",
-        body = {},
-        files = [],
-        bodyJson = {};
+  })  : method = "GET", body = {}, files = [];
 
   RequestApi.delete({
     required String url,
     this.headers,
-  })  : method = "DELETE",
-        body = {},
-        files = [],
-        uri = Uri.parse(url),
-        bodyJson = {},
-        enableCache = false;
+  })  : method = "DELETE", body = {}, files = [], uri = Uri.parse(url);
   RequestApi.deleteUri({
     required this.uri,
     this.headers,
-  })  : method = "DELETE",
-        body = {},
-        files = [],
-        bodyJson = {},
-        enableCache = false;
+  })  : method = "DELETE", body = {}, files = [];
 
   RequestApi.customMethod({
     required this.method,
-    this.bodyJson = const {},
     required String url,
     this.headers,
     this.files = const [],
     this.body = const {},
-    this.enableCache = false,
   }) : uri = Uri.parse(url);
+
   RequestApi.customMethodUri({
     required this.method,
     required this.uri,
-    this.bodyJson = const {},
     this.headers,
     this.files = const [],
     this.body = const {},
-    this.enableCache = false,
   });
 
   Future<dynamic> request({bool getResponseBytes = false}) async {
-    debugPrint(uri.toString());
-    debugPrint(json.encode(body));
-    http.MultipartRequest request = MultipartRequest(method, uri,
-        onProgress: (int? bytes, int? totalBytes) {
-      FastHttp.requestProgressStream
-          .add(RequestProgressModel(bytes: bytes, totalBytes: totalBytes));
+    log(uri.toString());
+    log(json.encode(body));
+    http.MultipartRequest request = MultipartRequest(method, uri, onProgress: (int? bytes, int? totalBytes) {
+      FastHttp.requestProgressStream.add(RequestProgressModel(bytes: bytes, totalBytes: totalBytes));
     });
-    request.fields.addAll(body);
+    request.fields.addAll(body as Map<String,String>);
     request.files.addAll(files);
     if (headers != null) request.headers.addAll(headers!);
-    return await _ApiBaseHelper(
-            request: request,
-            requestApi: this,
-            getResponseBytes: getResponseBytes,
-            enableCache: enableCache)
-        .httpSendRequest();
+    return await _ApiBaseHelper(request: request, requestApi: this, getResponseBytes: getResponseBytes,).call();
   }
 
   Future<dynamic> requestJson({bool getResponseBytes = false}) async {
-    debugPrint(uri.toString());
-    debugPrint(json.encode(bodyJson));
+    log(uri.toString());
+    log(json.encode(body));
     http.Request request = http.Request(method, uri);
-    if (bodyJson.isNotEmpty) request.body = json.encode(bodyJson);
+    if (body.isNotEmpty) request.body = json.encode(body);
     if (headers != null) request.headers.addAll(headers!);
-    return await _ApiBaseHelper(
-            request: request,
-            requestApi: this,
-            getResponseBytes: getResponseBytes,
-            enableCache: enableCache)
-        .httpSendRequest();
+    return await _ApiBaseHelper(request: request, requestApi: this, getResponseBytes: getResponseBytes).call();
+  }
+}
+
+class _ApiBaseHelper {
+  final http.BaseRequest request;
+  final RequestApi requestApi;
+  final bool getResponseBytes;
+
+  _ApiBaseHelper({
+    required this.request,
+    required this.requestApi,
+    this.getResponseBytes = false,
+  });
+
+
+  Future<dynamic> call() async {
+    http.StreamedResponse response;
+    Uint8List? responseBytes;
+    String? responseText;
+    try {
+      request.headers.addAll(FastHttp.staticHeaders);
+
+      response = await request.send().timeout(const Duration(minutes: 5));
+
+      if (getResponseBytes) responseBytes = await response.stream.toBytes();
+      if (!getResponseBytes) responseText = await response.stream.bytesToString();
+
+
+      AnsiPen pen = AnsiPen()..green(bold: true);
+      log(pen("statusCode: ${response.statusCode}"));
+    } catch (e) {
+      log(e.toString());
+      throw ServerException(
+        errorMessageModel: ErrorMessageModel(
+          statusCode: 0,
+          statusMessage: e.toString(),
+          requestApi: requestApi,
+        ),
+      );
+    }
+    if (getResponseBytes) return responseBytes;
+    return _handleResponse(response.statusCode, responseText ?? "", requestApi);
+  }
+
+  static Future<dynamic> _handleResponse(int statusCode, String resStream, RequestApi requestApi) async {
+    FastHttp.onGetStatusCode?.call(statusCode);
+    Map<String, dynamic> jsonResponse = {};
+
+    ServerException serverException({String? message}) => ServerException(
+      errorMessageModel: ErrorMessageModel(
+        statusCode: statusCode,
+        statusMessage: message,
+        requestApi: requestApi,
+        responseApi: jsonResponse,
+      ),
+    );
+
+    try {
+      jsonResponse = jsonDecode(resStream) as Map<String, dynamic>;
+    } catch (e) {
+      throw ServerException(
+        errorMessageModel: ErrorMessageModel(
+            statusCode: statusCode,
+            requestApi: requestApi,
+            responseApi: {
+              "_THIS_KEY_FROM_APP_THERE_IS_NO_KEY_GETTING_": resStream
+            }),
+      );
+    }
+    AnsiPen pen = AnsiPen()..green(bold: true);
+    log(pen("$jsonResponse"));
+
+    if(statusCode > 199 && statusCode <= 299) {
+      {
+        if (jsonResponse[FastHttp.staticCheckStatusKey] == false) throw serverException(message: FastHttp.staticFetErrorMessageFromResponse?.call(jsonResponse));
+        return jsonResponse;
+      }
+    }else{
+      serverException(message: FastHttp.staticFetErrorMessageFromResponse?.call(jsonResponse));
+    }
+
   }
 }
 
@@ -214,111 +237,5 @@ class MultipartRequest extends http.MultipartRequest {
 
     final stream = byteStream.transform(t);
     return http.ByteStream(stream);
-  }
-}
-
-class _ApiBaseHelper {
-  final http.BaseRequest request;
-  final RequestApi requestApi;
-  final bool getResponseBytes;
-  final bool enableCache;
-
-  _ApiBaseHelper(
-      {required this.request,
-      required this.requestApi,
-      this.getResponseBytes = false,
-      this.enableCache = false});
-
-  static CacheResponseManager cacheManager = CacheResponseManager();
-
-  Future<dynamic> httpSendRequest() async {
-    http.StreamedResponse response;
-    Uint8List? responseBytes;
-    String? responseText;
-    try {
-      request.headers.addAll(FastHttp.staticHeaders);
-
-      response = await request.send().timeout(const Duration(minutes: 5));
-      if (getResponseBytes) responseBytes = await response.stream.toBytes();
-      if (!getResponseBytes) {
-        responseText = await response.stream.bytesToString();
-      }
-
-      AnsiPen pen = AnsiPen()..green(bold: true);
-      debugPrint(pen("statusCode: ${response.statusCode}"));
-      try {
-        if (enableCache) {
-          _setCachedResponse(
-              responseBytes: responseBytes, responseText: responseText);
-        }
-      } catch (_) {}
-    } catch (e) {
-      log(e.toString());
-      throw ServerException(
-        errorMessageModel: ErrorMessageModel(
-          statusCode: 0,
-          statusMessage: e.toString(),
-          requestApi: requestApi,
-        ),
-      );
-    }
-    if (getResponseBytes) return responseBytes;
-    return _returnResponse(response.statusCode, responseText ?? "", requestApi);
-  }
-
-  static Future<dynamic> _returnResponse(
-      int statusCode, String resStream, RequestApi requestApi) async {
-    FastHttp.onGetStatusCode?.call(statusCode);
-    Map<String, dynamic> jsonResponse = {};
-
-    ServerException serverException({String? message}) => ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: statusCode,
-              statusMessage: message,
-              requestApi: requestApi,
-              responseApi: jsonResponse),
-        );
-
-    try {
-      jsonResponse = jsonDecode(resStream) as Map<String, dynamic>;
-    } catch (e) {
-      throw ServerException(
-        errorMessageModel: ErrorMessageModel(
-            statusCode: statusCode,
-            requestApi: requestApi,
-            responseApi: {
-              "_THIS_KEY_FROM_APP_THERE_IS_NO_KEY_GETTING_": resStream
-            }),
-      );
-    }
-    AnsiPen pen = AnsiPen()..green(bold: true);
-    log(pen("$jsonResponse"));
-
-    switch (statusCode) {
-      case 200:
-        {
-          if (jsonResponse["success"] == false) {
-            throw serverException(message: jsonResponse["message"]?.toString());
-          }
-          return jsonResponse;
-        }
-      default:
-        throw serverException(message: jsonResponse["message"]?.toString());
-    }
-  }
-
-  Future<dynamic> _setCachedResponse(
-      {Uint8List? responseBytes, String? responseText}) async {
-    if (getResponseBytes) {
-      if (responseBytes != null) {
-        cacheManager.setCachedResponseBytes(
-            request: requestApi, responseBytes: responseBytes);
-      }
-    } else {
-      if (responseText != null) {
-        cacheManager.setCachedResponseText(
-            request: requestApi, responseText: responseText);
-      }
-    }
   }
 }

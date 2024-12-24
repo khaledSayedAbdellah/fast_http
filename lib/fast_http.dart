@@ -8,15 +8,18 @@ class RequestProgressModel {
 }
 
 class FastHttp {
-  static StreamController<RequestProgressModel> requestProgressStream =
-      StreamController<RequestProgressModel>.broadcast();
-  static Map<String, String> staticHeaders = {};
+  static StreamController<RequestProgressModel> requestProgressStream = StreamController<RequestProgressModel>.broadcast();
   static Function(int)? onGetStatusCode;
+  static String Function(dynamic)? staticFetErrorMessageFromResponse;
+  static String staticCheckStatusKey = "status";
 
-  static void initialize(
-      {required Function(int) onGetResponseStatusCode,
-      Map<String, String>? headers}) {
+  static void initialize({
+    String? checkStatusKey,
+    required Function(int) onGetResponseStatusCode,
+    String Function(dynamic)? getErrorMessageFromResponse,
+  }) {
+    if(checkStatusKey != null) staticCheckStatusKey = checkStatusKey;
+    staticFetErrorMessageFromResponse = getErrorMessageFromResponse;
     onGetStatusCode = onGetResponseStatusCode;
-    if (headers != null) staticHeaders = headers;
   }
 }

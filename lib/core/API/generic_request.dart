@@ -1,55 +1,52 @@
-import 'dart:convert';
 import 'dart:typed_data';
 import 'package:fast_http/core/API/request_method.dart';
 import 'package:fast_http/core/Error/error_message_model.dart';
 import 'package:fast_http/core/Error/exceptions.dart';
-import 'cache_response_manager.dart';
 
 abstract interface class ModelValidation {
   String? validate();
 }
 
-dynamic emptyFromMap = (Map<String, dynamic> a) => a;
+dynamic emptyFromMap(_)=> null;
 
 class GenericRequest<T> {
-  final T Function(Map<String, dynamic> json) fromMap;
+  static String _keyData = "data";
+  void init({required String keyData}){
+    _keyData = keyData;
+  }
+
+
+  final T Function(dynamic) fromMap;
   final RequestApi method;
 
   GenericRequest({required this.fromMap, required this.method});
 
-  ServerException errorModel(
-          dynamic response, String statusMessage, ExpectType expectType) =>
-      ServerException(
+  ServerException errorModel(dynamic response, String statusMessage, ExpectType expectType) => ServerException(
           errorMessageModel: ErrorMessageModel.modelValidation(
-        validateModelName: T.toString(),
-        expectType: expectType,
-        requestApi: method,
-        responseApi: response,
-        statusMessage: statusMessage,
-      ));
+          validateModelName: T.toString(),
+          expectType: expectType,
+          requestApi: method,
+          responseApi: response,
+          statusMessage: statusMessage,
+        ),
+      );
 
-  Future<T> getObject({bool usingCache = false}) async {
-    Map<String, dynamic> response;
-    if (!usingCache) {
-      if (method.body.isNotEmpty) {
-        response = await method.request() as Map<String, dynamic>;
-      } else {
-        response = await method.requestJson() as Map<String, dynamic>;
-      }
+  Future<dynamic> _fireRequest({bool getResponseBytes = false})async{
+    if (method.body is Map<String,String> || method.files.isNotEmpty) {
+      return await method.request(getResponseBytes: getResponseBytes);
     } else {
-      String? cachedResponse =
-          await CacheResponseManager().getCachedResponseText(method);
-      if (cachedResponse == null) {
-        throw errorModel(cachedResponse, "NO-CACHED", ExpectType.list);
-      }
-      response = jsonDecode(cachedResponse) as Map<String, dynamic>;
+      return await method.requestJson(getResponseBytes: getResponseBytes);
     }
-    if (response["data"] is! Map) {
-      throw errorModel(response, "data is not compatible with expected data",
-          ExpectType.object);
+  }
+
+  Future<T> getObject() async {
+    dynamic response = await _fireRequest();
+
+    if (response is! Map || response[_keyData] is! Map) {
+      throw errorModel(response, "data is not compatible with expected data", ExpectType.object);
     }
     try {
-      T result = fromMap(response["data"] as Map<String, dynamic>);
+      T result = fromMap(response[_keyData]);
       if (T is ModelValidation) {
         String? validateError = (result as ModelValidation).validate();
         if (validateError != null) {
@@ -62,33 +59,26 @@ class GenericRequest<T> {
     }
   }
 
-  Future<List<T>> getList({bool usingCache = false}) async {
-    Map<String, dynamic> response;
-    if (!usingCache) {
-      if (method.body.isNotEmpty || method.files.isNotEmpty) {
-        response = await method.request() as Map<String, dynamic>;
-      } else {
-        response = await method.requestJson() as Map<String, dynamic>;
-      }
-    } else {
-      String? cachedResponse =
-          await CacheResponseManager().getCachedResponseText(method);
-      if (cachedResponse == null) {
-        throw errorModel(cachedResponse, "NO-CACHED", ExpectType.list);
-      }
-      response = jsonDecode(cachedResponse) as Map<String, dynamic>;
+  Future<List<T>> getList() async {
+    dynamic response = await _fireRequest();
+
+    if (!(response is List || response[_keyData] is List || response[_keyData][_keyData] is List)) {
+      throw errorModel(response, "data is not compatible with expected data", ExpectType.list);
     }
-    if (!(response["data"] is List || response["data"]["data"] is List)) {
-      throw errorModel(response, "data is not compatible with expected data",
-          ExpectType.list);
+    final List<dynamic> responseList;
+    if(response is List) {
+      responseList = response;
+    } else if(response[_keyData] is List){
+      responseList = response[_keyData];
+    }else if(response[_keyData][_keyData] is List){
+      responseList = response[_keyData][_keyData];
+    }else{
+      responseList = [];
     }
-    final List<Map<String, dynamic>> responseList = ((response["data"] is List)
-        ? response["data"]
-        : response["data"]["data"]) as List<Map<String, dynamic>>;
     try {
       List<T> resultList = List<T>.from(responseList.map((e) => fromMap(e)));
       if (T is ModelValidation) {
-        for (var item in resultList) {
+        for (T item in resultList) {
           String? validateError = (item as ModelValidation).validate();
           if (validateError != null) {
             throw errorModel(response, validateError, ExpectType.list);
@@ -101,48 +91,8 @@ class GenericRequest<T> {
     }
   }
 
-  Future<Uint8List> getBytes({bool usingCache = false}) async {
-    Uint8List response;
-    if (!usingCache) {
-      if (method.body.isNotEmpty || method.files.isNotEmpty) {
-        response = await method.request(getResponseBytes: true) as Uint8List;
-      } else {
-        response =
-            await method.requestJson(getResponseBytes: true) as Uint8List;
-      }
-    } else {
-      Uint8List? cachedResponse =
-          await CacheResponseManager().getCachedResponseBytes(method);
-      if (cachedResponse == null) {
-        throw errorModel(cachedResponse, "NO-CACHED", ExpectType.list);
-      }
-      response = cachedResponse;
-    }
-
-    try {
-      return response;
-    } catch (e) {
-      throw errorModel(response, e.toString(), ExpectType.bytes);
-    }
-  }
-
-  Future<T> getResponse({bool usingCache = false}) async {
-    Map<String, dynamic> response;
-    if (!usingCache) {
-      if (method.body.isNotEmpty || method.files.isNotEmpty) {
-        response = await method.request() as Map<String, dynamic>;
-      } else {
-        response = await method.requestJson() as Map<String, dynamic>;
-      }
-    } else {
-      String? cachedResponse =
-          await CacheResponseManager().getCachedResponseText(method);
-      if (cachedResponse == null) {
-        throw errorModel(cachedResponse, "NO-CACHED", ExpectType.list);
-      }
-      response = jsonDecode(cachedResponse) as Map<String, dynamic>;
-    }
-
+  Future<T> getResponse() async {
+    dynamic response = await _fireRequest();
     try {
       T result = fromMap(response);
       if (T is ModelValidation) {
@@ -156,4 +106,15 @@ class GenericRequest<T> {
       throw errorModel(response, e.toString(), ExpectType.response);
     }
   }
+
+  Future<Uint8List> getBytes() async {
+    dynamic response = await _fireRequest(getResponseBytes: true) as Uint8List;
+    try {
+      return response;
+    } catch (e) {
+      throw errorModel(response, e.toString(), ExpectType.bytes);
+    }
+  }
+
+
 }
