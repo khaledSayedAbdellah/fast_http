@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:ansicolor/ansicolor.dart';
 import 'package:fast_http/core/Error/exceptions.dart';
 import 'package:fast_http/fast_http.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../Error/error_message_model.dart';
 export 'package:dartz/dartz.dart';
@@ -16,6 +15,7 @@ class RequestApi {
   final List<http.MultipartFile> files;
   final Map<String, String>? headers;
   final String method;
+  final bool isMultipartRequest;
 
   RequestApi._({
     required this.uri,
@@ -23,6 +23,7 @@ class RequestApi {
     required this.files,
     this.headers,
     required this.method,
+    required this.isMultipartRequest,
   });
 
   RequestApi copyWith({
@@ -31,6 +32,7 @@ class RequestApi {
     List<http.MultipartFile>? files,
     Map<String, String>? headers,
     String? method,
+    bool? isMultipartRequest,
   }) {
     return RequestApi._(
       files: files ?? this.files,
@@ -38,6 +40,7 @@ class RequestApi {
       uri: uri ?? this.uri,
       method: method ?? this.method,
       headers: headers ?? this.headers,
+      isMultipartRequest: isMultipartRequest ?? this.isMultipartRequest,
     );
   }
 
@@ -46,6 +49,7 @@ class RequestApi {
     required this.body,
     this.files = const [],
     this.headers,
+    this.isMultipartRequest = false,
   })  : method = "POST", uri = Uri.parse(url);
 
   RequestApi.postUri({
@@ -53,6 +57,7 @@ class RequestApi {
     this.body = const {},
     this.files = const [],
     this.headers,
+    this.isMultipartRequest = false,
   }) : method = "POST";
 
   RequestApi.put({
@@ -60,6 +65,7 @@ class RequestApi {
     required this.body,
     this.files = const [],
     this.headers,
+    this.isMultipartRequest = false,
   })  : method = "PUT", uri = Uri.parse(url);
 
   RequestApi.putUri({
@@ -67,26 +73,27 @@ class RequestApi {
     required this.body,
     this.files = const [],
     this.headers,
+    this.isMultipartRequest = false,
   })  : method = "PUT";
 
   RequestApi.get({
     required String url,
     this.headers,
-  })  : method = "GET", body = {}, files = [], uri = Uri.parse(url);
+  })  : method = "GET", body = {}, files = [], uri = Uri.parse(url),isMultipartRequest = false;
 
   RequestApi.getUri({
     required this.uri,
     this.headers,
-  })  : method = "GET", body = {}, files = [];
+  })  : method = "GET", body = {}, files = [],isMultipartRequest = false;
 
   RequestApi.delete({
     required String url,
     this.headers,
-  })  : method = "DELETE", body = {}, files = [], uri = Uri.parse(url);
+  })  : method = "DELETE", body = {}, files = [], uri = Uri.parse(url),isMultipartRequest = false;
   RequestApi.deleteUri({
     required this.uri,
     this.headers,
-  })  : method = "DELETE", body = {}, files = [];
+  })  : method = "DELETE", body = {}, files = [],isMultipartRequest = false;
 
   RequestApi.customMethod({
     required this.method,
@@ -94,6 +101,7 @@ class RequestApi {
     this.headers,
     this.files = const [],
     this.body = const {},
+    this.isMultipartRequest = false,
   }) : uri = Uri.parse(url);
 
   RequestApi.customMethodUri({
@@ -102,6 +110,7 @@ class RequestApi {
     this.headers,
     this.files = const [],
     this.body = const {},
+    this.isMultipartRequest = false,
   });
 
   Future<dynamic> request({bool getResponseBytes = false}) async {
