@@ -7,7 +7,6 @@ abstract interface class ModelValidation {
   String? validate();
 }
 
-dynamic emptyFromMap(_)=> null;
 
 class GenericRequest<T> {
   static String _keyData = "data";
@@ -15,21 +14,23 @@ class GenericRequest<T> {
     _keyData = keyData;
   }
 
+  static T _emptyFromMap<T>(empty)=> empty;
 
   final T Function(dynamic) fromMap;
   final RequestApi method;
 
   GenericRequest({required this.fromMap, required this.method});
+  GenericRequest.source({required this.method}): fromMap = _emptyFromMap;
 
   ServerException errorModel(dynamic response, String statusMessage, ExpectType expectType) => ServerException(
-          errorMessageModel: ErrorMessageModel.modelValidation(
-          validateModelName: T.toString(),
-          expectType: expectType,
-          requestApi: method,
-          responseApi: response,
-          statusMessage: statusMessage,
-        ),
-      );
+      errorMessageModel: ErrorMessageModel.modelValidation(
+      validateModelName: T.toString(),
+      expectType: expectType,
+      requestApi: method,
+      responseApi: response,
+      statusMessage: statusMessage,
+    ),
+  );
 
   Future<dynamic> _fireRequest({bool getResponseBytes = false})async{
     if (method.isMultipartRequest || method.files.isNotEmpty || method.body is Map<String,String>) {

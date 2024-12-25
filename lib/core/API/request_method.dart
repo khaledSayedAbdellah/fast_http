@@ -7,6 +7,7 @@ import 'package:fast_http/core/Error/exceptions.dart';
 import 'package:fast_http/fast_http.dart';
 import 'package:http/http.dart' as http;
 import '../Error/error_message_model.dart';
+import 'header_manager.dart';
 export 'package:dartz/dartz.dart';
 
 class RequestApi {
@@ -117,7 +118,7 @@ class RequestApi {
     log(uri.toString());
     log(json.encode(body));
     http.MultipartRequest request = MultipartRequest(method, uri, onProgress: (int? bytes, int? totalBytes) {
-      FastHttp.requestProgressStream.add(RequestProgressModel(bytes: bytes, totalBytes: totalBytes));
+      FastHttp.requestProgressStream.add((bytes,totalBytes));
     });
     request.fields.addAll(body as Map<String,String>);
     request.files.addAll(files);
@@ -152,7 +153,7 @@ class _ApiBaseHelper {
     Uint8List? responseBytes;
     String? responseText;
     try {
-      request.headers.addAll(FastHttp.staticHeaders);
+      request.headers.addAll(await FastHttpHeader().getHeaders());
 
       response = await request.send().timeout(const Duration(minutes: 5));
 

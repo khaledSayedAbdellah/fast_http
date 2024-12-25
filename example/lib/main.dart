@@ -53,16 +53,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Uint8List? imageData;
 
   Future getImage() async {
-    setState(() {
-      imageData = null;
-    });
-    final result = await APIMethod.getImageData(
-        imagePath: "https://picsum.photos/id/237/200/300");
+    setState(() {imageData = null;});
+    final result = await APIMethod.getImageData(imagePath: "https://picsum.photos/id/237/200/300");
     result.fold(
         (l) => log(l.errorModel.statusMessage),
-        (r) => setState(() {
-              imageData = r;
-            }));
+        (r) => setState(() {imageData = r;}),
+    );
   }
 
   @override
@@ -88,14 +84,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: StreamBuilder<RequestProgressModel>(
+      floatingActionButton: StreamBuilder<(int? bytes,int? totalBytes)>(
           stream: FastHttp.requestProgressStream.stream,
           builder: (context, snapshot) {
             if (!snapshot.hasData) return const SizedBox();
             return FloatingActionButton(
               onPressed: () {},
               child: Text(
-                  "${snapshot.data?.bytes ?? 0} / ${snapshot.data?.totalBytes ?? 0}"),
+                  "${snapshot.data?.$1 ?? 0} / ${snapshot.data?.$2 ?? 0}"),
             );
           }),
     );

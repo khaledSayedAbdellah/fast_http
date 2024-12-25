@@ -21,11 +21,8 @@ class APIMethod {
   static Future<Either<Failure, Uint8List>> getImageData(
       {required String imagePath}) async {
     try {
-      Uint8List response = await GenericRequest<dynamic>(
-        method: RequestApi.get(
-          url: imagePath,
-        ),
-        fromMap: emptyFromMap,
+      Uint8List response = await GenericRequest<Uint8List>.source(
+        method: RequestApi.get(url: imagePath,),
       ).getBytes();
       return Right(response);
     } on ServerException catch (failure) {
