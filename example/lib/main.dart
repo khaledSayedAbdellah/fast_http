@@ -4,6 +4,7 @@ import 'package:fast_http/fast_http.dart';
 import 'package:flutter/material.dart';
 
 import 'api_method.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -59,6 +60,12 @@ class _MyHomePageState extends State<MyHomePage> {
         (l) => log(l.errorModel.statusMessage),
         (r) => setState(() {imageData = r;}),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    FastHttpHeader().addDynamicHeader("token", () async => (await SharedPreferences.getInstance()).getString("token") ?? "");
   }
 
   @override

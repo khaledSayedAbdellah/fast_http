@@ -3,6 +3,7 @@ import 'package:fast_http/core/API/generic_request.dart';
 import 'package:fast_http/core/API/request_method.dart';
 import 'package:fast_http/core/Error/exceptions.dart';
 import 'package:fast_http/core/Error/failures.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class APIMethod {
   static Future<Either<Failure, dynamic>> executeRequestApi(
@@ -18,8 +19,7 @@ class APIMethod {
     }
   }
 
-  static Future<Either<Failure, Uint8List>> getImageData(
-      {required String imagePath}) async {
+  static Future<Either<Failure, Uint8List>> getImageData({required String imagePath}) async {
     try {
       Uint8List response = await GenericRequest<Uint8List>.source(
         method: RequestApi.get(url: imagePath,),

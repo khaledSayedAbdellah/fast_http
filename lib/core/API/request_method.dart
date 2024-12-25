@@ -154,7 +154,7 @@ class _ApiBaseHelper {
     String? responseText;
     try {
       request.headers.addAll(await FastHttpHeader().getHeaders());
-
+      log("Request Headers: ${request.headers}");
       response = await request.send().timeout(const Duration(minutes: 5));
 
       if (getResponseBytes) responseBytes = await response.stream.toBytes();
