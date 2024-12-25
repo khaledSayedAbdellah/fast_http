@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'error_message_model.dart';
 
 abstract class Failure extends Equatable {
-  final ErrorMessageModel errorModel;
+  final RequestErrorModel errorModel;
 
   const Failure(this.errorModel);
 
@@ -15,7 +15,7 @@ abstract class Failure extends Equatable {
 class ServerFailure extends Failure {
   const ServerFailure(super.model);
 
-  static handleError(ErrorMessageModel model) {
+  static handleError(RequestErrorModel model) {
     dynamic result = model.statusMessage;
     if (result.runtimeType == List) {
       // ToastHelper.showError(message: result.join('!@#').replaceAll('!@#', "'\n"));

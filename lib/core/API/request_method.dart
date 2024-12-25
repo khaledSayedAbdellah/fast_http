@@ -166,7 +166,7 @@ class _ApiBaseHelper {
     } catch (e) {
       log(e.toString());
       throw ServerException(
-        errorMessageModel: ErrorMessageModel(
+        errorMessageModel: RequestErrorModel(
           statusCode: 0,
           statusMessage: e.toString(),
           requestApi: requestApi,
@@ -182,7 +182,7 @@ class _ApiBaseHelper {
     Map<String, dynamic> jsonResponse = {};
 
     ServerException serverException({String? message}) => ServerException(
-      errorMessageModel: ErrorMessageModel(
+      errorMessageModel: RequestErrorModel(
         statusCode: statusCode,
         statusMessage: message,
         requestApi: requestApi,
@@ -194,7 +194,7 @@ class _ApiBaseHelper {
       jsonResponse = jsonDecode(resStream) as Map<String, dynamic>;
     } catch (e) {
       throw ServerException(
-        errorMessageModel: ErrorMessageModel(
+        errorMessageModel: RequestErrorModel(
             statusCode: statusCode,
             requestApi: requestApi,
             responseApi: {

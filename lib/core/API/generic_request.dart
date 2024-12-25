@@ -23,7 +23,7 @@ class GenericRequest<T> {
   GenericRequest.source({required this.method}): fromMap = _emptyFromMap;
 
   ServerException errorModel(dynamic response, String statusMessage, ExpectType expectType) => ServerException(
-      errorMessageModel: ErrorMessageModel.modelValidation(
+      errorMessageModel: RequestErrorModel.modelValidation(
       validateModelName: T.toString(),
       expectType: expectType,
       requestApi: method,
@@ -88,7 +88,7 @@ class GenericRequest<T> {
       }
       return resultList;
     } catch (e) {
-      throw errorModel(response, e.toString(), ExpectType.object);
+      throw errorModel(response, e.toString(), ExpectType.list);
     }
   }
 
