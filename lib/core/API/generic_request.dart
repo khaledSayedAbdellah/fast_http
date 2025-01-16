@@ -33,7 +33,7 @@ class GenericRequest<T> {
   );
 
   Future<dynamic> _fireRequest({bool getResponseBytes = false})async{
-    if (method.isMultipartRequest || method.files.isNotEmpty || method.body is Map<String,String>) {
+    if (method.isMultipartRequest || method.files.isNotEmpty) {
       return await method.request(getResponseBytes: getResponseBytes);
     } else {
       return await method.requestJson(getResponseBytes: getResponseBytes);
