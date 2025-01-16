@@ -153,7 +153,10 @@ class _ApiBaseHelper {
     Uint8List? responseBytes;
     String? responseText;
     try {
-      request.headers.addAll(await FastHttpHeader().getHeaders());
+      Map<String, String> requestHeaders = await FastHttpHeader().getHeaders();
+      if(request.headers.isNotEmpty) requestHeaders.addAll(request.headers);
+      request.headers.clear();
+      request.headers.addAll(requestHeaders);
       log("Request Headers: ${request.headers}");
       response = await request.send().timeout(const Duration(minutes: 5));
 
