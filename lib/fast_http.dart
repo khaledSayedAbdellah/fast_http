@@ -1,8 +1,7 @@
 library fast_http;
 
 import 'dart:async';
-// export './core/API/request_method.dart';
-// export './core/API/generic_request.dart';
+import 'core/API/generic_request.dart';
 export './core/API/header_manager.dart';
 export './core/Error/error_message_model.dart';
 export './core/Error/exceptions.dart';
@@ -16,11 +15,13 @@ class FastHttp {
 
   static void initialize({
     String? checkStatusKey,
+    String? genericDataKey,
     required Function(int) onGetResponseStatusCode,
     String Function(dynamic)? getErrorMessageFromResponse,
   }) {
     if(checkStatusKey != null) staticCheckStatusKey = checkStatusKey;
     staticFetErrorMessageFromResponse = getErrorMessageFromResponse;
     onGetStatusCode = onGetResponseStatusCode;
+    if(genericDataKey != null) GenericRequest.init(keyData: genericDataKey);
   }
 }

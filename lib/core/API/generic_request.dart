@@ -10,7 +10,7 @@ abstract interface class ModelValidation {
 
 class GenericRequest<T> {
   static String _keyData = "data";
-  void init({required String keyData}){
+  static void init({required String keyData}){
     _keyData = keyData;
   }
 
