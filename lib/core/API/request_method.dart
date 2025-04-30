@@ -182,7 +182,7 @@ class _ApiBaseHelper {
 
   static Future<dynamic> _handleResponse(int statusCode, String resStream, RequestApi requestApi) async {
     FastHttp.onGetStatusCode?.call(statusCode);
-    Map<String, dynamic> jsonResponse = {};
+    dynamic jsonResponse;
 
     ServerException serverException({String? message}) => ServerException(
       errorMessageModel: RequestErrorModel(
@@ -194,7 +194,7 @@ class _ApiBaseHelper {
     );
 
     try {
-      jsonResponse = jsonDecode(resStream) as Map<String, dynamic>;
+      jsonResponse = jsonDecode(resStream);
     } catch (e) {
       throw ServerException(
         errorMessageModel: RequestErrorModel(
@@ -210,7 +210,7 @@ class _ApiBaseHelper {
 
     if(statusCode > 199 && statusCode <= 299) {
       {
-        if (jsonResponse[FastHttp.staticCheckStatusKey] == false) throw serverException(message: FastHttp.staticFetErrorMessageFromResponse?.call(jsonResponse));
+        if (jsonResponse.runtimeType == Map && jsonResponse[FastHttp.staticCheckStatusKey] == false) throw serverException(message: FastHttp.staticFetErrorMessageFromResponse?.call(jsonResponse));
         return jsonResponse;
       }
     }else{
