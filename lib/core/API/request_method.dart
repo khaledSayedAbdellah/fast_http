@@ -155,7 +155,7 @@ class _ApiBaseHelper {
     try {
       Map<String, String> globalHeaders = await FastHttpHeader().getHeaders();
       Map<String, String> requestHeaders = {...request.headers};
-      if(request.headers.isNotEmpty) requestHeaders.addAll(globalHeaders);
+      requestHeaders.addAll(globalHeaders);
       request.headers.clear();
       request.headers.addAll(requestHeaders);
       log("Request Headers: ${request.headers}");
