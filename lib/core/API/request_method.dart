@@ -153,8 +153,9 @@ class _ApiBaseHelper {
     Uint8List? responseBytes;
     String? responseText;
     try {
-      Map<String, String> requestHeaders = await FastHttpHeader().getHeaders();
-      if(request.headers.isNotEmpty) requestHeaders.addAll(request.headers);
+      Map<String, String> globalHeaders = await FastHttpHeader().getHeaders();
+      Map<String, String> requestHeaders = {...request.headers};
+      if(request.headers.isNotEmpty) requestHeaders.addAll(globalHeaders);
       request.headers.clear();
       request.headers.addAll(requestHeaders);
       log("Request Headers: ${request.headers}");
