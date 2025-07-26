@@ -117,7 +117,7 @@ class RequestApi {
     http.MultipartRequest request = MultipartRequest(method, uri, onProgress: (int? bytes, int? totalBytes) {
       FastHttp.requestProgressStream.add((bytes,totalBytes));
     });
-    request.fields.addAll(body as Map<String,String>);
+    request.fields.addAll(body.map((key, value) => MapEntry(key, value.toString())));
     request.files.addAll(files);
     if (headers != null) request.headers.addAll(headers!);
     return await _ApiBaseHelper(request: request, requestApi: this, getResponseBytes: getResponseBytes,).call();
