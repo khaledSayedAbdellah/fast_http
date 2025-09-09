@@ -212,7 +212,7 @@ class _ApiBaseHelper {
         return jsonResponse;
       }
     }else{
-      serverException(message: FastHttp.staticFetErrorMessageFromResponse?.call(jsonResponse));
+      throw serverException(message: FastHttp.staticFetErrorMessageFromResponse?.call(jsonResponse));
     }
 
   }
