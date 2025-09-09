@@ -43,9 +43,6 @@ class GenericRequest<T> {
   Future<T> getObject() async {
     dynamic response = await _fireRequest();
 
-    if (response is! Map || response[_keyData] is! Map) {
-      throw errorModel(response, "data is not compatible with expected data", ExpectType.object);
-    }
     try {
       T result = fromMap(response[_keyData]);
       if (T is ModelValidation) {
