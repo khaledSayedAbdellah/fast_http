@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 import 'dart:typed_data';
 import 'package:ansicolor/ansicolor.dart';
 import 'package:fast_http/fast_http.dart';
@@ -209,7 +208,7 @@ class _ApiBaseHelper {
 
     if(statusCode > 199 && statusCode <= 299) {
       {
-        if (FastHttp.staticCheckResponseIsSuccess != null && !FastHttp.staticCheckResponseIsSuccess.call(jsonResponse)) throw serverException(message: FastHttp.staticGetErrorMessageFromResponse?.call(jsonResponse));
+        if (FastHttp.staticCheckResponseIsSuccess != null && !FastHttp.staticCheckResponseIsSuccess!.call(jsonResponse)) throw serverException(message: FastHttp.staticGetErrorMessageFromResponse?.call(jsonResponse));
         return jsonResponse;
       }
     }else{
