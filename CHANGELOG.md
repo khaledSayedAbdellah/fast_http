@@ -15,3 +15,9 @@
 ## 1.0.1
 
 * adding static header for requests that will be set one time while app is running
+
+
+
+## 1.0.11
+
+* solve empty response error
