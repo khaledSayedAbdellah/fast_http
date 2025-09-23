@@ -192,7 +192,7 @@ class _ApiBaseHelper {
     );
 
     try {
-      jsonResponse = jsonDecode(resStream);
+      jsonResponse = resStream.isEmpty? null : jsonDecode(resStream);
     } catch (e) {
       throw ServerException(
         errorMessageModel: RequestErrorModel(
